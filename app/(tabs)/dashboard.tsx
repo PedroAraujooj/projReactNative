@@ -102,7 +102,7 @@ export default function Dashboard() {
             <Card style={styles.card}>
                 <Text variant={"headlineLarge"} style={styles.titulo}>Clientes guardados</Text>
                 <View>
-
+                    
                     <Controller
                         control={control}
                         name="email"
@@ -139,7 +139,7 @@ export default function Dashboard() {
                             />
                         )}
                     />
-
+                    
                     {/*<Button mode={"contained"}  onPress={handleSubmit(handleClick)}>{idEmEdicao? "ALTERAR":"INSERIR"}</Button>
                     <Button mode={"contained"}  onPress={handleExcluir}>EXCLUIR</Button>*/}
 
