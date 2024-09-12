@@ -1,5 +1,5 @@
 import Topbar from "@/components/navigation/topbar";
-import {useColorScheme} from "react-native";
+import {useColorScheme, View} from "react-native";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
 import {Button} from "react-native-paper";
@@ -12,7 +12,7 @@ export default function Settings() {
     console.log(setTema);
     console.log(tema);
     return (
-        <div>
+        <View>
             <Topbar
                 title="Configurações"
                 back={true}
@@ -22,7 +22,7 @@ export default function Settings() {
                 changeTheme(tema.colors.background == "rgb(29, 27, 22)"? "light":"dark");
             }}>Mudar tema</Button>
 
-        </div>
+        </View>
 
     );
 }

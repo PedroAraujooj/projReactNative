@@ -140,12 +140,14 @@ export default function Dashboard() {
                         )}
                     />
                     
-                    {/*<Button mode={"contained"}  onPress={handleSubmit(handleClick)}>{idEmEdicao? "ALTERAR":"INSERIR"}</Button>
-                    <Button mode={"contained"}  onPress={handleExcluir}>EXCLUIR</Button>*/}
+                    <Button mode={"contained"}  onPress={handleSubmit(handleClick)}>{idEmEdicao? "ALTERAR":"INSERIR"}</Button>
+                    <Button mode={"contained"}  onPress={handleExcluir}>EXCLUIR</Button>
 
                 </View>
             </Card>
-            {/*<ListaUsuariosTP3 usuarios={usuarios} setIdEmEdicao={setIdEmEdicao}/>*/}
+
+            <ListaUsuariosTP3 usuarios={usuarios} setIdEmEdicao={setIdEmEdicao}/>
+
 
         </Surface>
 
@@ -155,12 +157,8 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
     card: {
         marginTop: '5%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        minHeight: '60%',
-        width: '95%',
-        alignItems: 'center',
         justifyContent: 'center',
+
     },
     surface: {
         width: '100%',

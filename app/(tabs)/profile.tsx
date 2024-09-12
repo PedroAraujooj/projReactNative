@@ -11,7 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import {ThemeContext} from "@/app/_layout";
 import Grid from "@/components/grid";
 import {UserInterface} from "@/app/infra/User";
-import {select} from "@/app/infra/database";
+import {insert, select} from "@/app/infra/database";
 import Avatar from "@/components/avatar";
 import Fab from "@/components/fab";
 import Camera from "@/components/camera";
@@ -25,7 +25,7 @@ export default function Profile() {
         photoURL: null
     });
     const getUser = async () => {
-        const d = await select("usuario", ["id", "email", "nome", "telefone", "photoURL", "phoneNumber"], null, false);
+        const d = await select("usuario", ["id", "email", "nome", "telefone", "photoURL"], null, false);
         setData((v) => ({
             ...v,
             ...d
@@ -88,6 +88,15 @@ export default function Profile() {
         const nome = data.nome;
         await alterarUsuario({...logedUser, telefone: telefone, nome: nome});
         let novoUser = await obterUsuario(logedUser.id);
+       /* id TEXT PRIMARY KEY NOT NULL,
+            email TEXT NOT NULL,
+            nome TEXT,
+            photoURL TEXT,
+            telefone TEXT,
+            sync INTEGER*/
+        await insert('usuario',{id: novoUser.id, email: novoUser.email,
+        nome: novoUser.nome, telefone: novoUser.telefone, photoURL: novoUser.photoURL} );
+
         console.log(novoUser);
         setLogedUser(novoUser);
     }
@@ -170,16 +179,6 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-    card: {
-        padding: 8,
-        marginTop: '14%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        minHeight: '70%',
-        width: '70%',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
     surface: {
         width: '100%',
         height: '100%',

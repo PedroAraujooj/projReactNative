@@ -31,7 +31,6 @@ export async function logarUsuario(email, senha) {
     if (!retorno.isAtivo) {
         return {erro: "Usuario bloqueado"};
     }
-    await insert('user', retorno);
     return retorno;
 }
 

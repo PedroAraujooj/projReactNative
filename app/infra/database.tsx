@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 const getDb = async () => {
-    // @ts-ignore
+    // @ts-ignore //jij
     return await SQLite.openDatabaseAsync("localDb");
 }
 

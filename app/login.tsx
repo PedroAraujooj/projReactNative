@@ -70,13 +70,7 @@ export default function Login() {
 
 const styles = StyleSheet.create({
     card: {
-        padding: 8,
         marginTop: '14%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        minHeight: '70%',
-        width: '70%',
-        alignItems: 'center',
         justifyContent: 'center',
     },
     surface: {

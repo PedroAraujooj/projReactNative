@@ -17,7 +17,7 @@ export default function TabLayout() {
     if (isLoading ||isLoadingTheme) {
         return <Text>Loading...</Text>;
     }
-    if (!logedUser.id || !session) {
+    if ( !logedUser.id || !session) {
         return <Redirect href="/login" />;
     }
     console.log(theme);
@@ -49,7 +49,7 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="profile"
+                name="dashboard"
                 options={{
                     title: 'Dashboard',
                     tabBarIcon: ({ color, focused }) => (
