@@ -1,7 +1,7 @@
 import { useContext, createContext, type PropsWithChildren } from 'react';
 import {setStorageItemAsync, useStorageState} from './useStorageState';
 import {User} from "@firebase/auth";
-import {createTableUser, dropTable} from "@/app/infra/database";
+import {createTables, dropTable, insert} from "@/app/infra/database";
 
 const AuthContext = createContext<{
     signIn: (user:string) => void;
@@ -56,9 +56,10 @@ export function SessionProvider({ children }: PropsWithChildren) {
                 },
                 signOut: async() => {
                     setSession(null);
-                    setSession(null);
                     await dropTable("usuario");
-                    await createTableUser();
+                    await dropTable("item");
+                    await dropTable("item_image");
+                    await createTables();
                 },
                 changeTheme: (theme: string) => {
                     setTheme(theme);

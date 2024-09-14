@@ -1,7 +1,6 @@
 import Topbar from "@/components/navigation/topbar";
 import {useSession} from "@/app/ctx";
 import {Controller, useForm} from "react-hook-form";
-import {alterarUsuario, logarUsuario, obterUsuario, Usuario} from "@/app/infra/usuario";
 import {Redirect, router} from "expo-router";
 import { Button, Card, Surface, Text, TextInput} from "react-native-paper";
 import {StyleSheet, View} from "react-native";
@@ -11,30 +10,37 @@ import * as ImagePicker from "expo-image-picker";
 import {ThemeContext} from "@/app/_layout";
 import Grid from "@/components/grid";
 import {UserInterface} from "@/app/infra/User";
-import {insert, select} from "@/app/infra/database";
+import {insert, select, update} from "@/app/infra/database";
 import Avatar from "@/components/avatar";
 import Fab from "@/components/fab";
 import Camera from "@/components/camera";
+import {Usuario} from "@/app/infra/usuario";
 
 export default function Profile() {
     const {setLogedUser, logedUser} = useContext(ThemeContext);
     const [loading, setLoading] = useState(false);
     const [cameraVisible, setCameraVisible] = useState(false);
     const cameraRef = useRef(null);
-    const [data, setData] = useState<UserInterface>({
+    const [data, setData] = useState<Usuario>({
         photoURL: null
     });
     const getUser = async () => {
         const d = await select("usuario", ["id", "email", "nome", "telefone", "photoURL"], null, false);
+        console.log("11111111111")
+        console.log(d);
         setData((v) => ({
             ...v,
             ...d
         }))
+        console.log("22222222222222")
+
+        console.log(data);
     }
 
 
     useEffect(() => {
         getUser();
+        console.log(data)
     }, []);
 
     const pickImage = async () => {
@@ -75,30 +81,32 @@ export default function Profile() {
 
     useEffect(() => {
         reset({
-            nome: logedUser.nome,
-            telefone: logedUser.telefone,
+            nome: data.nome,
+            telefone: data.telefone,
         });
-    }, [logedUser, reset]);
+    }, [data, reset]);
 
 
-    async function handleClick(data) {
-        console.log(data);
+    async function handleClick(dataForm) {
+        console.log("+++++++++++++++++++");
+        console.log(dataForm);
         console.log(logedUser);
-        const telefone = data.telefone;
-        const nome = data.nome;
-        await alterarUsuario({...logedUser, telefone: telefone, nome: nome});
-        let novoUser = await obterUsuario(logedUser.id);
+        const telefone = dataForm.telefone;
+        const nome = dataForm.nome;
+        setData((data) => ({...data, telefone: telefone, nome: nome}))
+        //await alterarUsuario({...logedUser, telefone: telefone, nome: nome});
+        //let novoUser = await obterUsuario(logedUser.id);
        /* id TEXT PRIMARY KEY NOT NULL,
             email TEXT NOT NULL,
             nome TEXT,
             photoURL TEXT,
             telefone TEXT,
             sync INTEGER*/
-        await insert('usuario',{id: novoUser.id, email: novoUser.email,
-        nome: novoUser.nome, telefone: novoUser.telefone, photoURL: novoUser.photoURL} );
+        console.log("---------------------------")
+        await update('usuario',{nome: data.nome, telefone: data.telefone}, data.id );
 
-        console.log(novoUser);
-        setLogedUser(novoUser);
+        console.log(data);
+        setLogedUser(data);
     }
 
     return (
@@ -114,6 +122,7 @@ export default function Profile() {
                         <Grid style={{
                             ...styles.containerCenterImage
                         }}>
+                            {console.log(data.photoURL)}
                             {
                                 data.photoURL ? <Avatar size={230} source={{uri: data.photoURL}} /> : <Avatar size={230} icon="account" />
                             }

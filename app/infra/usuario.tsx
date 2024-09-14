@@ -38,7 +38,9 @@ export interface Usuario {
     id: number | string;
     email: string;
     senha: string;
-    erro: string;
+    nome: string;
+    telefone: string;
+    photoURL: string;
 }
 
 export async function deslogarUsuario() {

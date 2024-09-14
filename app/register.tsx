@@ -3,9 +3,10 @@ import {useForm} from "react-hook-form";
 import {criarConta, logarUsuario, Usuario} from "@/app/infra/usuario";
 import {router} from "expo-router";
 import {Button, Card, Surface, Text, TextInput} from "react-native-paper";
-import {StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
+import Topbar from "@/components/navigation/topbar";
 
 export default function Register() {
     const {signIn} = useSession();
@@ -43,37 +44,35 @@ export default function Register() {
 
     return (
         <Surface elevation={1} style={styles.surface}>
+            <Topbar
+                title="Criar Conta"
+                back={true}
+                menu={true}/>
             <Card style={styles.card}>
-                <Text variant={"headlineLarge"}>Login</Text>
-                <form>
-                    <br/>
+                <Text variant={"headlineLarge"}>Criar Conta</Text>
+                <View>
                     <TextInput
                         id="email"
                         label="Email"
                         onChangeText={(text) => setValue("email", text)}
                     />
-                    <br/>
-                    <br/>
+
                     <TextInput
                         id="senha"
                         label="senha"
                         secureTextEntry={true}
                         onChangeText={(text) => setValue("senha", text)}
                     />
-                    <br/>
-                    <br/>
                     <TextInput
                         id="confirma"
                         label="confirma"
                         secureTextEntry={true}
                         onChangeText={(text) => setValue("confirma", text)}
                     />
-                    <br/>
-                    <br/>
                     <Button mode="contained" onPress={handleSubmit(handleClick)}>
                         Login
                     </Button>
-                </form>
+                </View>
             </Card>
         </Surface>
     );
@@ -81,14 +80,8 @@ export default function Register() {
 
 const styles = StyleSheet.create({
     card: {
-        padding: 8,
         marginTop: '14%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        minHeight: '70%',
-        width: '70%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        textAlign: "center"
     },
     surface: {
         width: '100%',

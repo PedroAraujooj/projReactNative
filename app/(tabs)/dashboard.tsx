@@ -1,3 +1,66 @@
+import {router} from "expo-router";
+import React, {useEffect, useState} from "react";
+import {select} from "@/app/infra/database";
+import Grid from "@/components/grid";
+import Topbar from "@/components/navigation/topbar";
+import List from "@/components/list";
+import IconButton from "@/components/IconButton";
+import Fab from "@/components/fab";
+import Checkbox from "@/components/checkbox";
+
+export default function HomeScreen() {
+    const [data, setData] = useState([]);
+
+    const loadData = async () => {
+        const d  = await select("item", [ "id", "title", "description", "createdAt", "sync"], "", true);
+        setData(d);
+    }
+
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    return <Grid style={{
+        height: '100%',
+        width: '100%',
+    }}>
+        <Grid>
+            <Topbar title="Home"/>
+        </Grid>
+        <Grid>
+            {
+                data != null ?
+                    data.map((d, idx: number) => {
+                        return <List
+                            title={d.title}
+                            description={d.description}
+                            left={() => <Checkbox />}
+                            right={() => <IconButton
+                                onPress={() => {
+                                    router.push({ pathname: `/form`, params: { id: d.id } });
+                                }}
+                                icon="pencil" />}
+                        />
+                    })
+                    : null
+            }
+        </Grid>
+        <Fab
+            icon="plus"
+            onPress={() => {
+                router.push('form');
+            }}
+            style={{
+                bottom: 20,
+                position: 'absolute',
+                borderRadius: 200,
+                right: 20,
+            }}/>
+    </Grid>;
+}
+
+
+/*
 import React, {useContext, useEffect, useRef, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import {
@@ -7,7 +70,7 @@ import {
     listarUsuariosTP3,
     obterUsuarioTP3
 } from "@/app/infra/usuarioTP3";
-import {Button, Card, Surface, Text, TextInput} from "react-native-paper";
+import {Button, Card, IconButton, Surface, Text, TextInput} from "react-native-paper";
 import ListaUsuariosTP3 from "@/components/listaUsuariosTP3";
 import {ThemeContext} from "@/app/_layout";
 import {UserInterface} from "@/app/infra/User";
@@ -24,6 +87,11 @@ import Topbar from "@/components/navigation/topbar";
 export default function Dashboard() {
     const [usuarios, setUsuarios] = useState([{id:1},{id:4}]);
     const [idEmEdicao, setIdEmEdicao] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [imageToDelete, setImageToDelete] = useState(null);
+    const [cameraVisible, setCameraVisible] = useState(false);
+    const [dialogVisible, setDialogVisible] = useState(false);
+
     const {
         control,
         register,
@@ -33,9 +101,11 @@ export default function Dashboard() {
         setValue,
     } = useForm({
         defaultValues: {
+            id: "",
             email: "",
             nome: "",
-            telefone: ""
+            telefone: "",
+            imagens: []
         }
     });
 
@@ -95,6 +165,30 @@ export default function Dashboard() {
         }
     }
 
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        setLoading(true);
+
+        if (!result.canceled) {
+            const images = data.images;
+            result.assets.forEach((image: any) => {
+                images.push(image.uri);
+            })
+            updateImages(images);
+        }
+        setLoading(false);
+    };
+
+    const updateImages = (images: string[]) => {
+        setData((v: any) => ({...v, images: images}));
+    }
+
     return (
         <Surface elevation={1} style={styles.surface}>
             <Topbar title="Dashboard de clientes"/>
@@ -139,7 +233,80 @@ export default function Dashboard() {
                             />
                         )}
                     />
-                    
+                    <Grid style={{
+                        ...styles.padding
+                    }}>
+                        <Text variant="headlineSmall">Galeria</Text>
+                    </Grid>
+                    <Grid style={{
+                        ...styles.padding,
+                        paddingTop: 0,
+                        flexDirection: 'row',
+                        flexWrap: 'wrap'
+                    }}>
+                        {
+                            loading ?
+                                <Text>Carregando...</Text>
+                                : data.images.map((image: string, index: number) => {
+                                    return <Grid key={index}
+                                                 style={{
+                                                     width: '33.33%',
+                                                     height: 100,
+                                                     padding: 5,
+                                                     position: 'relative'
+                                                 }}>
+                                        <Card
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                zIndex: 2,
+                                            }}
+                                            source={{ uri: image }}/>
+                                        <IconButton
+                                            icon={"close"}
+                                            onPress={() => {
+                                                setDialogVisible(true);
+                                                setImageToDelete(index);
+                                            }}
+                                            style={{
+                                                position: 'absolute',
+                                                top: -15,
+                                                right: -15,
+                                                zIndex: 2,
+                                                backgroundColor: "#fff",
+                                            }}/>
+                                    </Grid>
+                                })
+                        }
+                    </Grid>
+                    <Grid style={{
+                        ...styles.padding,
+                        display: 'flex',
+                        flexDirection: 'row',
+                    }}>
+                        <Grid style={{
+                            ...styles.padding,
+                            width: '50%'
+                        }}>
+                            <Button
+                                icon="camera"
+                                mode="contained"
+                                onPress={() => setCameraVisible(true)}>
+                                Tirar foto
+                            </Button>
+                        </Grid>
+                        <Grid style={{
+                            ...styles.padding,
+                            width: '50%'
+                        }}>
+                            <Button
+                                icon="image"
+                                mode="contained"
+                                onPress={pickImage}>
+                                Galeria
+                            </Button>
+                        </Grid>
+                    </Grid>
                     <Button mode={"contained"}  onPress={handleSubmit(handleClick)}>{idEmEdicao? "ALTERAR":"INSERIR"}</Button>
                     <Button mode={"contained"}  onPress={handleExcluir}>EXCLUIR</Button>
 
@@ -190,4 +357,4 @@ const styles = StyleSheet.create({
     left: {
         left: 0
     }
-});
+});*/

@@ -3,8 +3,9 @@ import {useForm} from "react-hook-form";
 import {logarUsuario, resetarSenha, Usuario} from "@/app/infra/usuario";
 import {router} from "expo-router";
 import {Button, Card, Surface, Text, TextInput} from "react-native-paper";
-import {StyleSheet} from "react-native";
+import {StyleSheet, View} from "react-native";
 import {useState} from "react";
+import Topbar from "@/components/navigation/topbar";
 
 export default function ForgotPassword() {
     const [sucesso,setSucesso] = useState(false);
@@ -26,21 +27,22 @@ export default function ForgotPassword() {
 
     return (
         <Surface elevation={1} style={styles.surface}>
+            <Topbar
+                title="Recuperar senha"
+                back={true}
+                menu={true}/>
             <Card style={styles.card}>
-                <Text variant={"headlineLarge"}>Login</Text>
-                <form>
-                    <br/>
+                <Text variant={"headlineLarge"}>Recuperar senha</Text>
+                <View>
                     <TextInput
                         id="email"
                         label="Email"
                         onChangeText={(text) => setValue("email", text)}
                     />
-                    <br/>
-                    <br/>
                     <Button mode="contained" onPress={handleSubmit(handleClick)}>
                         Recuperar senha
                     </Button>
-                </form>
+                </View>
                 {sucesso && ("Email de recuperação enviado")}
                 {!sucesso && isSubmitted && ("Erro ao enviar email de recuperação")}
             </Card>
@@ -50,14 +52,8 @@ export default function ForgotPassword() {
 
 const styles = StyleSheet.create({
     card: {
-        padding: 8,
         marginTop: '14%',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        minHeight: '70%',
-        width: '70%',
-        alignItems: 'center',
-        justifyContent: 'center',
+        textAlign: "center"
     },
     surface: {
         width: '100%',

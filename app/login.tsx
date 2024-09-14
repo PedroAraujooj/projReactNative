@@ -2,11 +2,13 @@ import {Button, Card, HelperText, Surface, Text, TextInput, useTheme} from "reac
 import {StyleSheet, View} from 'react-native';
 import {useForm} from "react-hook-form";
 import {useSession} from "@/app/ctx";
-import {router} from "expo-router";
+import {Link, router} from "expo-router";
 import {logarUsuario, Usuario} from "@/app/infra/usuario";
 import {navigate} from "expo-router/build/global-state/routing";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
+import {insert, select} from "@/app/infra/database";
+import Grid from "@/components/grid";
 
 export default function Login() {
     const {signIn} = useSession();
@@ -31,7 +33,16 @@ export default function Login() {
             console.log(usuario);
             setLogedUser(usuario);
             signIn(usuario.email);
+            const d = await select("usuario", ["id", "email", "nome", "telefone", "photoURL"], null, false);
+            if (d == null) {
+                await insert('usuario', {
+                    id: usuario.id, email: usuario.email,
+                    nome: usuario.nome, telefone: usuario.telefone
+                });
+            }
             router.replace('/');
+
+
         } else {
             alert(usuario.erro);
         }
@@ -41,28 +52,45 @@ export default function Login() {
         <Surface elevation={1} style={styles.surface}>
             <Card style={styles.card}>
                 <Text variant={"headlineLarge"}>Login</Text>
-                <View>
-
-                    <TextInput
-                        id="email"
-                        label="Email"
-                        onChangeText={(text) => setValue("email", text)}
-                    />
+                <TextInput
+                    id="email"
+                    label="Email"
+                    onChangeText={(text) => setValue("email", text)}
+                />
 
 
-                    <TextInput
-                        id="senha"
-                        label="senha"
-                        secureTextEntry={true}
-                        autoComplete="current-password"
-                        onChangeText={(text) => setValue("senha", text)}
-                    />
+                <TextInput
+                    id="senha"
+                    label="senha"
+                    secureTextEntry={true}
+                    autoComplete="current-password"
+                    onChangeText={(text) => setValue("senha", text)}
+                />
 
 
-                    <Button mode="contained" onPress={handleSubmit(handleClick)}>
-                        Login
-                    </Button>
-                </View>
+                <Button mode="contained" onPress={handleSubmit(handleClick)}>
+                    Login
+                </Button>
+                <Grid style={{
+                    ...styles.padding,
+                    ...styles.container,
+                    textAlign: 'center'
+                }}>
+                    {/*@ts-ignore*/}
+                    <Link href="/register">
+                        Criar conta
+                    </Link>
+                </Grid>
+                <Grid style={{
+                    ...styles.padding,
+                    ...styles.container,
+                    textAlign: 'center'
+                }}>
+                    {/*@ts-ignore*/}
+                    <Link href="/forgot-password">
+                        Esqueci minha senha
+                    </Link>
+                </Grid>
             </Card>
         </Surface>
     );
@@ -71,7 +99,7 @@ export default function Login() {
 const styles = StyleSheet.create({
     card: {
         marginTop: '14%',
-        justifyContent: 'center',
+        textAlign: "center"
     },
     surface: {
         width: '100%',
@@ -80,5 +108,14 @@ const styles = StyleSheet.create({
     img: {
         marginLeft: 'auto',
         marginRight: 'auto',
+    },
+    container: {
+        flex: 0,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    padding: {
+        padding: 16,
     }
+
 });

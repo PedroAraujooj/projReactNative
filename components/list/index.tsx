@@ -1,9 +1,9 @@
-import { List as OldList } from 'react-native-paper';
-export default function List({title, ...props} : any){
-    return(
-        <OldList.Section {...props}>
-            <OldList.Subheader>{title}</OldList.Subheader>
-            {props.children}
-        </OldList.Section>
-    );
-}
+import * as React from 'react';
+import { List as Lt } from 'react-native-paper';
+
+const List = (props: any) => (
+    <Lt.Item
+        {...props}/>
+);
+
+export default List;
