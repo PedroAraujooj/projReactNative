@@ -8,7 +8,7 @@ const Checkbox = (props: any) => {
                 alignItems: 'center',
             }}>
                 <Check {...props} />
-                { props.label && <Text onPress={props.onPress}>{props.label}</Text> }
+                { props.label && <Text>{props.label}</Text> }
             </View>
 }
 

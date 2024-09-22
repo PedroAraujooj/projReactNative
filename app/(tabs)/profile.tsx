@@ -66,7 +66,7 @@ export default function Profile() {
     const onCapture = (photo: any) => {
         setData((v: any) => ({
             ...v,
-            image: photo.uri
+            photoURL: photo.uri
         }));
     }
 

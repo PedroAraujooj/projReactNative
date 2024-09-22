@@ -7,7 +7,7 @@ import {logarUsuario, Usuario} from "@/app/infra/usuario";
 import {navigate} from "expo-router/build/global-state/routing";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
-import {insert, select} from "@/app/infra/database";
+import {insert, populateDatabase, select} from "@/app/infra/database";
 import Grid from "@/components/grid";
 
 export default function Login() {
@@ -39,6 +39,8 @@ export default function Login() {
                     id: usuario.id, email: usuario.email,
                     nome: usuario.nome, telefone: usuario.telefone
                 });
+            }else{
+                await populateDatabase(d.id);
             }
             router.replace('/');
 

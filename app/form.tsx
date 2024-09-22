@@ -1,7 +1,7 @@
 import {router, useLocalSearchParams} from "expo-router";
 import {useEffect, useRef, useState} from "react";
 import {ScrollView} from "react-native";
-import {useTheme} from "react-native-paper";
+import {Surface, useTheme} from "react-native-paper";
 import * as ImagePicker from 'expo-image-picker';
 import {drop, insert, select, update} from "@/app/infra/database";
 import Grid from "@/components/grid";
@@ -14,6 +14,7 @@ import Camera from "@/components/camera";
 import Snackbar from "@/components/snackBar";
 import TextInput from "@/components/textinput";
 import Text from "@/components/text";
+import Checkbox from "@/components/checkbox";
 
 export default function FormScreen() {
     const theme = useTheme();
@@ -24,6 +25,8 @@ export default function FormScreen() {
         id: null,
         title: null,
         description: null,
+        isCusto: "false",
+        valor: null,
         images: []
     });
 
@@ -52,6 +55,8 @@ export default function FormScreen() {
                 await update('item', {
                     title: data.title,
                     description: data.description,
+                    valor: data.valor,
+                    isCusto: data.isCusto,
                 }, id)
 
                 await drop("item_image", `itemId='${id}'`)
@@ -65,6 +70,8 @@ export default function FormScreen() {
                 id = await insert('item', {
                     title: data.title,
                     description: data.description,
+                    valor: data.valor,
+                    isCusto: data.isCusto,
                 })
 
                 if(data.images?.length > 0){
@@ -90,10 +97,10 @@ export default function FormScreen() {
 
     const loadData = async () => {
         if(params.id){
-            const d = await select("item", [ "id", "title", "description", "createdAt", "sync"], `id='${params.id}'`, false);
+            const d = await select("item", [ "id", "title", "isCusto", "valor", "description", "createdAt", "sync"], `id='${params.id}'`, false);
             const images: Array = await select("item_image", [ "id", "image", "itemId", "createdAt", "sync"], `itemId='${params.id}'`, true);
 
-            console.log(images)
+            console.log(d)
             setData((v: any) => ({
                 ...v,
                 ...d,
@@ -127,7 +134,9 @@ export default function FormScreen() {
         setData((v: any) => ({...v, images: images}));
     }
 
-    return <Grid style={{
+    return <Surface elevation={1}>
+
+    <Grid style={{
         height: '100%',
         width: '100%',
     }}>
@@ -152,12 +161,34 @@ export default function FormScreen() {
             <Grid style={{
                 ...styles.padding
             }}>
+                {console.log(data.valor)}
+                <TextInput
+                    label="Valor"
+                    value={data.valor !== null && data.valor !== undefined ? String(data.valor) : ''}
+                    onChangeText={(text) => setData((v: any) => ({...v, valor: text}))}
+                />
+            </Grid>
+            <Grid style={{
+                ...styles.padding
+            }}>
                 <TextInput
                     label="Descrição"
                     multiline={true}
                     numberOfLines={6}
                     value={data.description}
                     onChangeText={(text) => setData((v: any) => ({...v, description: text}))}
+                />
+            </Grid>
+            <Grid style={{
+                ...styles.padding
+            }}>
+                <Checkbox
+                    status={data.isCusto == "true"? 'checked' : 'unchecked'}
+                    label="Esse item financeiro é um custo"
+                    onPress={() => {
+                        let newVal = data.isCusto == "true" ? "false" : "true";
+                        setData((v: any) => ({...v, isCusto: newVal}));
+                    }}
                 />
             </Grid>
             <Grid style={{
@@ -296,7 +327,8 @@ export default function FormScreen() {
             visible={messageText !== null}
             onDismiss={() => setMessageText(null)}
             text={messageText} />
-    </Grid>;
+    </Grid>
+    </Surface>;
 }
 
 const styles = {

@@ -1,62 +1,113 @@
 import {router} from "expo-router";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {select} from "@/app/infra/database";
 import Grid from "@/components/grid";
 import Topbar from "@/components/navigation/topbar";
 import List from "@/components/list";
 import IconButton from "@/components/IconButton";
 import Fab from "@/components/fab";
+import Text from "@/components/text";
 import Checkbox from "@/components/checkbox";
+import {View} from "react-native";
+import {ThemeContext} from "@/app/_layout";
+import {Surface} from "react-native-paper";
 
-export default function HomeScreen() {
+export default function Dashboard() {
     const [data, setData] = useState([]);
+    const {setTema, tema} = useContext(ThemeContext);
+    const [total, setTotal] = useState(0);
+
+
 
     const loadData = async () => {
-        const d  = await select("item", [ "id", "title", "description", "createdAt", "sync"], "", true);
+        const d = await select("item", ["id", "title", "isCusto", "valor", "description", "createdAt", "sync"], "", true);
         setData(d);
     }
 
     useEffect(() => {
         loadData();
+        calcularTotal();
     }, []);
 
-    return <Grid style={{
-        height: '100%',
-        width: '100%',
-    }}>
-        <Grid>
-            <Topbar title="Home"/>
-        </Grid>
-        <Grid>
-            {
-                data != null ?
-                    data.map((d, idx: number) => {
-                        return <List
-                            title={d.title}
-                            description={d.description}
-                            left={() => <Checkbox />}
-                            right={() => <IconButton
-                                onPress={() => {
-                                    router.push({ pathname: `/form`, params: { id: d.id } });
-                                }}
-                                icon="pencil" />}
-                        />
-                    })
-                    : null
+    useEffect(() => {
+        calcularTotal();
+    }, [data]);
+
+    const calcularTotal = () => {
+        let newTotal = 0;
+        data.forEach((item) => {
+            console.log(item.valor)
+            if(item.isCusto == "true"){
+                newTotal -= item.valor;
+            }else{
+                newTotal += item.valor;
             }
-        </Grid>
-        <Fab
-            icon="plus"
-            onPress={() => {
-                router.push('form');
-            }}
-            style={{
-                bottom: 20,
+        })
+        setTotal(newTotal);
+    }
+
+    return <Surface elevation={1} >
+        <Grid style={{
+            height: '100%',
+            width: '100%',
+        }}>
+            <Grid>
+                <Topbar title="Itens Financeiros"/>
+            </Grid>
+            <Grid>
+                {
+                    data != null ?
+                        data.map((d, idx: number) => {
+                            return <List
+                                title={d.title}
+                                description={d.description}
+                                left={props => (
+                                    <View style={{
+                                        marginTop: "auto",
+                                        marginBottom: "auto",
+                                    }}>
+                                        <Text>{`R$ ${d.valor}`}</Text>
+                                    </View>
+                                )}
+                                right={() => <IconButton
+                                    onPress={() => {
+                                        router.push({pathname: `/form`, params: {id: d.id}});
+                                    }}
+                                    icon="pencil"/>}
+                                style={{
+                                    backgroundColor: d.isCusto == "true" ? (tema.colors.background == "rgb(29, 27, 22)" ? "#ab5558" : "#f2797d") : (tema.colors.background == "rgb(29, 27, 22)" ? "#597d52" : "#9ad690"),
+                                }}
+                            />
+                        })
+                        : null
+                }
+            </Grid>
+            <Fab
+                icon="plus"
+                onPress={() => {
+                    router.push('form');
+                }}
+                style={{
+                    bottom: 20,
+                    position: 'absolute',
+                    borderRadius: 200,
+                    right: 20,
+                    zIndex: 3,
+                }}/>
+            <Surface elevation={1} theme={tema.colors.primaryContainer} style={{
+                width: '100%',
+                height: '7%',
+                bottom: 0,
                 position: 'absolute',
-                borderRadius: 200,
-                right: 20,
-            }}/>
-    </Grid>;
+                right: 0,
+                backgroundColor:tema.colors.primaryContainer,
+                display:"flex",
+                justifyContent: "center",
+            }}>
+                <Text>Total: {`R$ ${total}`}</Text>
+            </Surface>
+        </Grid>
+    </Surface>;
 }
 
 

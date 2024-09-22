@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import * as Network from 'expo-network';
+import {getData, loadData, updateData} from "@/app/infra/realtime";
 
 const queryUser = `
             PRAGMA journal_mode = WAL;
@@ -17,6 +18,8 @@ const queryItem = `
             CREATE TABLE IF NOT EXISTS item (
                 id TEXT PRIMARY KEY NOT NULL, 
                 title TEXT NOT NULL, 
+                isCusto TEXT,
+                valor REAL,
                 description TEXT,
                 createdAt TEXT, 
                 sync INTEGER
@@ -35,13 +38,15 @@ const queryItemImage = `
             );
         `;
 
-const verifyConnection = async () => {
+const verifyConnection = async (): Promise<boolean> => {
     const airplaneMode: boolean = await Network.isAirplaneModeEnabledAsync();
-    const network = await Network.getNetworkStateAsync();
+    const network: any = await Network.getNetworkStateAsync();
+    const result = network.isConnected && !airplaneMode;
 
-    console.log(network);
-
-    return network.isConnected && !airplaneMode;
+    if (result) {
+        syncNow();
+    }
+    return result;
 }
 const getDb = async () => {
     // @ts-ignore //jij
@@ -84,8 +89,10 @@ const dropTable = async (table: string) => {
 
 const update = async (table: string, data: any, id: string) => {
     try{
-        console.log(data);
-        const db = await getDb();
+        console.log("pedro@gmail.com")
+        const sync = await syncFirebase(table, data, id);
+        data.sync = sync ? 1 : 0;        const db = await getDb();
+
         const keys = Object.keys(data);
         const values= Object.values(data).filter((v) => v !== "");
 
@@ -93,7 +100,6 @@ const update = async (table: string, data: any, id: string) => {
 
         const query = `UPDATE ${table} SET ${columns.substring(0, columns.length)} WHERE id = '${id}'`;
         await db.runAsync(query, values);
-        syncFirebase();
         console.log("Dado atualizado com sucesso")
     }catch (err){
         console.error("Error insert:", err)
@@ -118,13 +124,18 @@ const drop = async (table: string, where: string) => {
     }
 }
 
-const syncFirebase = async () => {
+const syncFirebase = async (table, data, uid): Promise<boolean> => {
+    console.log("jooj1=2")
+
     const statusConnection = await verifyConnection();
-    console.log(statusConnection);
     if(statusConnection) {
-        console.log("Atualiza o firebase");
+        console.log("jooj1")
+        updateData(table, data, uid);
     }
+
+    return statusConnection;
 }
+
 
 const syncDropItem = async (field: string, value: string) => {
     const statusConnection = await verifyConnection();
@@ -142,6 +153,9 @@ const insert = async (table: string, data: any): Promise<string> => {
             data.id = generateUID(28);
         }
 
+        const sync = await syncFirebase(table, data, data.uid);
+        data.sync = sync ? 1 : 0;
+
         const keys = Object.keys(data);
         const values= Object.values(data).filter((v) => !!v);
 
@@ -152,7 +166,6 @@ const insert = async (table: string, data: any): Promise<string> => {
         console.log(query);
         console.log(values);
         await db.runAsync(query, values);
-        await syncFirebase();
         console.log("Dado inserido com sucesso")
         return data.id;
     }catch (err){
@@ -185,11 +198,61 @@ const select = async (table: string, columns: string[] , where: string, many: bo
     }
 }
 
+const populateDatabase = async (uid: string) => {
+    console.log(`=======1`)
+    const tables = [
+        "usuario", "item", "item_image"
+    ]
+    const user = await getData("table", uid);
+    console.log(`=======1.1`)
+
+    const items = await loadData("item");
+    const itemImages = await loadData("item_image");
+
+    console.log(`=======2`)
+
+    if (user) {
+        console.log("======2.2")
+        await update("usuario", user, uid);
+    }
+    console.log("======2.3")
+
+    const itemKeys = items != null ? Object.keys(items): [];
+    const itemImagesKeys = itemImages != null ? Object.keys(itemImages): [];
+    console.log(`=======3`)
+
+    for(let key of itemKeys){
+        const item = items[key]
+        // TODO: Modificar para não enviar para a nuvem
+        await insert("item", item);
+    }
+    console.log(`=======4`)
+
+    for(let key of itemImagesKeys){
+        const itemImage = itemImages[key]
+        // TODO: Modificar para não enviar para a nuvem
+        await insert("item_image", itemImage);
+    }
+}
+
+const syncNow = async () => {
+
+}
+
+const syncBothDatabase = async () => {
+    setInterval(async () => {
+        await verifyConnection();
+    }, 60000 * 5);
+}
+
+
 export {
     insert,
     createTables,
     dropTable,
     select,
     update,
-    drop
+    drop,
+    syncBothDatabase,
+    populateDatabase
 }

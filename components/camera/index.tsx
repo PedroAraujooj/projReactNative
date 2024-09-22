@@ -2,7 +2,7 @@
 
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import {forwardRef, useImperativeHandle, useState} from 'react';
-import { Button, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Fab from '../fab';
 import Dialog from '../dialog';
 

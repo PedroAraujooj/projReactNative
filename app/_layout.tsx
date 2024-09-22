@@ -10,7 +10,7 @@ import {PaperProvider, Text} from "react-native-paper";
 import {SessionProvider, useSession} from "@/app/ctx";
 import {darkTheme, lightTheme} from "@/constants/Theme";
 import Slot = Navigator.Slot;
-import {createTables} from "@/app/infra/database";
+import {createTables, syncBothDatabase} from "@/app/infra/database";
 
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -44,7 +44,7 @@ export default function RootLayout() {
             setTema(lightTheme);
         }
         createTables();
-
+        syncBothDatabase();
 
     }, []);
 
