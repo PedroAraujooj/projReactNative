@@ -2,11 +2,14 @@ import {useSession} from "@/app/ctx";
 import {useForm} from "react-hook-form";
 import {criarConta, logarUsuario, Usuario} from "@/app/infra/usuario";
 import {router} from "expo-router";
-import {Button, Card, Surface, Text, TextInput} from "react-native-paper";
+import {Card, Surface} from "react-native-paper";
 import {StyleSheet, View} from "react-native";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
 import Topbar from "@/components/navigation/topbar";
+import Text from "@/components/text";
+import TextInput from "@/components/textinput";
+import Button from "@/components/button";
 
 export default function Register() {
     const {signIn} = useSession();

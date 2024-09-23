@@ -2,10 +2,11 @@ import {Redirect, Tabs} from 'expo-router';
 import React, {useContext} from 'react';
 
 import {TabBarIcon} from '@/components/navigation/TabBarIcon';
+import Text from '@/components/text';
 import {Colors} from '@/constants/Colors';
 import {useColorScheme} from '@/hooks/useColorScheme';
 import {useSession} from "@/app/ctx";
-import {Text, useTheme} from "react-native-paper";
+import { useTheme} from "react-native-paper";
 import {darkTheme, lightTheme} from "@/constants/Theme";
 import {ThemeContext} from "@/app/_layout";
 

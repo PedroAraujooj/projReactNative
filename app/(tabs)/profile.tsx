@@ -2,7 +2,7 @@ import Topbar from "@/components/navigation/topbar";
 import {useSession} from "@/app/ctx";
 import {Controller, useForm} from "react-hook-form";
 import {Redirect, router} from "expo-router";
-import { Button, Card, Surface, Text, TextInput} from "react-native-paper";
+import {Card, Surface} from "react-native-paper";
 import {StyleSheet, View} from "react-native";
 import React, {useContext, useEffect, useRef, useState} from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -13,8 +13,11 @@ import {UserInterface} from "@/app/infra/User";
 import {insert, select, update} from "@/app/infra/database";
 import Avatar from "@/components/avatar";
 import Fab from "@/components/fab";
+import Text from "@/components/text";
 import Camera from "@/components/camera";
 import {Usuario} from "@/app/infra/usuario";
+import TextInput from "@/components/textinput";
+import Button from "@/components/button";
 
 export default function Profile() {
     const {setLogedUser, logedUser} = useContext(ThemeContext);

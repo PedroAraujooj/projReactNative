@@ -7,7 +7,7 @@ import {
     listarUsuariosTP3,
     obterUsuarioTP3
 } from "@/app/infra/usuarioTP3";
-import {Button, Card, Surface, TextInput} from "react-native-paper";
+import { Surface} from "react-native-paper";
 import Text from "@/components/text";
 import {ThemeContext} from "@/app/_layout";
 import {UserInterface} from "@/app/infra/User";

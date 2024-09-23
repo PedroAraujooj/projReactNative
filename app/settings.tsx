@@ -2,9 +2,9 @@ import Topbar from "@/components/navigation/topbar";
 import {useColorScheme, View} from "react-native";
 import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
-import {Button} from "react-native-paper";
 import {darkTheme, lightTheme} from "@/constants/Theme";
 import {useSession} from "@/app/ctx";
+import Button from "@/components/button";
 
 export default function Settings() {
     const { changeTheme } = useSession();

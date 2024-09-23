@@ -2,10 +2,13 @@ import {useSession} from "@/app/ctx";
 import {useForm} from "react-hook-form";
 import {logarUsuario, resetarSenha, Usuario} from "@/app/infra/usuario";
 import {router} from "expo-router";
-import {Button, Card, Surface, Text, TextInput} from "react-native-paper";
+import {Card, Surface} from "react-native-paper";
 import {StyleSheet, View} from "react-native";
 import {useState} from "react";
 import Topbar from "@/components/navigation/topbar";
+import Button from "@/components/button";
+import Text from "@/components/text";
+import TextInput from "@/components/textinput";
 
 export default function ForgotPassword() {
     const [sucesso,setSucesso] = useState(false);

@@ -1,4 +1,4 @@
-import {Button, Card, HelperText, Surface, Text, TextInput, useTheme} from "react-native-paper";
+import {Card, HelperText, Surface, useTheme} from "react-native-paper";
 import {StyleSheet, View} from 'react-native';
 import {useForm} from "react-hook-form";
 import {useSession} from "@/app/ctx";
@@ -9,6 +9,9 @@ import {useContext} from "react";
 import {ThemeContext} from "@/app/_layout";
 import {insert, populateDatabase, select} from "@/app/infra/database";
 import Grid from "@/components/grid";
+import TextInput from "@/components/textinput";
+import Text from "@/components/text";
+import Button from "@/components/button";
 
 export default function Login() {
     const {signIn} = useSession();
@@ -54,6 +57,7 @@ export default function Login() {
         <Surface elevation={1} style={styles.surface}>
             <Card style={styles.card}>
                 <Text variant={"headlineLarge"}>Login</Text>
+                <Text variant={"bodySmall"}>(Usar: pedro@gmail.com, senha: 258348)</Text>
                 <TextInput
                     id="email"
                     label="Email"
